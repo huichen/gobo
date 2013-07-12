@@ -13,7 +13,7 @@ import (
 
 const (
 	NUM_THREADS    = 10
-	POSTS_PER_PAGE = 1
+	POSTS_PER_PAGE = 100
 )
 
 var (
@@ -130,6 +130,6 @@ func main() {
 	getFriendsStatuses()
 	getUserStatus()
 	getUserStatuses()
-	// updateStatus()
-	// uploadStatus()
+	updateStatus()
+	uploadStatus()
 }
