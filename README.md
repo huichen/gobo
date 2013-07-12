@@ -3,10 +3,10 @@ gobo
 
 新浪微博golang SDK
 
-# 安装
+# 安装/更新
 
 ```
-go get github.com/huichen/gobo
+go get -u github.com/huichen/gobo
 ```
 
 # 使用
