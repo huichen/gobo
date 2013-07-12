@@ -63,7 +63,7 @@ func (auth *Authenticator) GetAccessToken(code string) (AccessToken, error) {
 	queries.Add("code", code)
 
 	// 发送POST Form请求
-	resp, err := auth.httpClient.PostForm(requestUri, v)
+	resp, err := auth.httpClient.PostForm(requestUri, queries)
 	if err != nil {
 		return token, err
 	}
