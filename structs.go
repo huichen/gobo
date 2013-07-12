@@ -132,7 +132,7 @@ type Geo struct {
 	More          string
 }
 
-// 常见的API输出
+// 其他的常见API输出
 
 type WeiboError struct {
 	Err        string `json:"Error"`
