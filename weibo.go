@@ -36,12 +36,12 @@ type Weibo struct {
 //	response	API服务器的JSON输出将被还原成该结构体
 //
 // 当出现异常时输出非nil错误
-func (wb *Weibo) Call(method string, httpMethod string, token string, params Params, response interface{}) error {
+func (weibo *Weibo) Call(method string, httpMethod string, token string, params Params, response interface{}) error {
 	apiUri := fmt.Sprintf("%s/%s/%s%s", ApiDomain, ApiVersion, method, ApiNamePostfix)
 	if httpMethod == "get" {
-		return wb.sendGetHttpRequest(apiUri, token, params, response)
+		return weibo.sendGetHttpRequest(apiUri, token, params, response)
 	} else if httpMethod == "post" {
-		return wb.sendPostHttpRequest(apiUri, token, params, nil, "", response)
+		return weibo.sendPostHttpRequest(apiUri, token, params, nil, "", response)
 	}
 	return &ErrorString{"HTTP方法只能是\"get\"或者\"post\""}
 }
@@ -56,13 +56,13 @@ func (wb *Weibo) Call(method string, httpMethod string, token string, params Par
 //	response	API服务器的JSON输出将被还原成该结构体
 //
 // 当出现异常时输出非nil错误
-func (wb *Weibo) Upload(token string, params Params, reader io.Reader, imageFormat string, response interface{}) error {
+func (weibo *Weibo) Upload(token string, params Params, reader io.Reader, imageFormat string, response interface{}) error {
 	apiUri := fmt.Sprintf("%s/%s/%s%s", ApiDomain, ApiVersion, UploadAPIName, ApiNamePostfix)
-	return wb.sendPostHttpRequest(apiUri, token, params, reader, imageFormat, response)
+	return weibo.sendPostHttpRequest(apiUri, token, params, reader, imageFormat, response)
 }
 
 // 向微博API服务器发送GET请求
-func (wb *Weibo) sendGetHttpRequest(uri string, token string, params Params, response interface{}) error {
+func (weibo *Weibo) sendGetHttpRequest(uri string, token string, params Params, response interface{}) error {
 	// 生成请求URI
 	var uriBuffer bytes.Buffer
 	uriBuffer.WriteString(fmt.Sprintf("%s?access_token=%s", uri, token))
@@ -74,7 +74,7 @@ func (wb *Weibo) sendGetHttpRequest(uri string, token string, params Params, res
 	requestUri := uriBuffer.String()
 
 	// 发送GET请求
-	resp, err := wb.httpClient.Get(requestUri)
+	resp, err := weibo.httpClient.Get(requestUri)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func (wb *Weibo) sendGetHttpRequest(uri string, token string, params Params, res
 // 向微博API服务器发送POST请求
 //
 // 输入参数的含义请见Upload函数注释。当reader == nil时使用query string模式，否则使用multipart。
-func (wb *Weibo) sendPostHttpRequest(uri string, token string, params Params, reader io.Reader, imageFormat string, response interface{}) error {
+func (weibo *Weibo) sendPostHttpRequest(uri string, token string, params Params, reader io.Reader, imageFormat string, response interface{}) error {
 	// 生成POST请求URI
 	requestUri := fmt.Sprintf("%s?access_token=%s", uri, token)
 
@@ -147,7 +147,7 @@ func (wb *Weibo) sendPostHttpRequest(uri string, token string, params Params, re
 	}
 
 	// 发送请求
-	resp, err := wb.httpClient.Do(req)
+	resp, err := weibo.httpClient.Do(req)
 	if err != nil {
 		return err
 	}

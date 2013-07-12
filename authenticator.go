@@ -21,49 +21,49 @@ type Authenticator struct {
 // 初始化结构体
 //
 // 在调用其它函数之前必须首先初始化。
-func (wb *Authenticator) Init(redirectUri string, clientId string, clientSecret string) error {
+func (auth *Authenticator) Init(redirectUri string, clientId string, clientSecret string) error {
 	// 检查结构体是否已经初始化
-	if !wb.initialized {
+	if !auth.initialized {
 		return &ErrorString{"Weibo结构体已经初始化"}
 	}
 
-	wb.redirectUri = redirectUri
-	wb.clientId = clientId
-	wb.clientSecret = clientSecret
-	wb.httpClient = new(http.Client)
-	wb.initialized = true
+	auth.redirectUri = redirectUri
+	auth.clientId = clientId
+	auth.clientSecret = clientSecret
+	auth.httpClient = new(http.Client)
+	auth.initialized = true
 	return nil
 }
 
 // 得到认证URI
-func (wb *Authenticator) GetAuthURI() (string, error) {
+func (auth *Authenticator) GetAuthURI() (string, error) {
 	// 检查结构体是否初始化
-	if !wb.initialized {
+	if !auth.initialized {
 		return "", &ErrorString{"Weibo结构体尚未初始化"}
 	}
 
-	return fmt.Sprintf("%s/oauth2/authorize?redirect_uri=%s&response_type=code&client_id=%s", ApiDomain, wb.redirectUri, wb.clientId), nil
+	return fmt.Sprintf("%s/oauth2/authorize?redirect_uri=%s&response_type=code&client_id=%s", ApiDomain, auth.redirectUri, auth.clientId), nil
 }
 
 // 给定认证code得到access token
-func (wb *Authenticator) GetAccessToken(code string) (AccessToken, error) {
+func (auth *Authenticator) GetAccessToken(code string) (AccessToken, error) {
 	// 检查结构体是否初始化
 	token := AccessToken{}
-	if !wb.initialized {
+	if !auth.initialized {
 		return token, &ErrorString{"Weibo结构体尚未初始化"}
 	}
 
 	// 生成请求URI
 	requestUri := fmt.Sprintf("%s/oauth2/access_token", ApiDomain)
-	v := url.Values{}
-	v.Add("client_id", wb.clientId)
-	v.Add("client_secret", wb.clientSecret)
-	v.Add("redirect_uri", wb.redirectUri)
-	v.Add("grant_type", "authorization_code")
-	v.Add("code", code)
+	queries := url.Values{}
+	queries.Add("client_id", auth.clientId)
+	queries.Add("client_secret", auth.clientSecret)
+	queries.Add("redirect_uri", auth.redirectUri)
+	queries.Add("grant_type", "authorization_code")
+	queries.Add("code", code)
 
 	// 发送POST Form请求
-	resp, err := wb.httpClient.PostForm(requestUri, v)
+	resp, err := auth.httpClient.PostForm(requestUri, v)
 	if err != nil {
 		return token, err
 	}
