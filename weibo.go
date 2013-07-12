@@ -14,10 +14,10 @@ import (
 	"net/url"
 )
 
-// Params是一个JSON key到value的映射表，包含所有API的输入参数。注意：
-// 1. 所有的value都是string类型的，其它类型请转化为string
+// Params是一个key到value的表，用来表达所有API的JSON输入参数。注意：
+// 1. value必须是string类型的，其它类型请转化为string
 // 2. Params不应当包含access_token，因为access_token已经是Call和Upload函数的参数
-// 3. Upload函数的Params参数不应当包含pic参数，上传的图片必须通过reader和imageFormat指定
+// 3. 在Upload函数中，Params参数不应当包含pic参数，上传的图片内容和类型应当通过reader和imageFormat指定
 type Params map[string]string
 
 type Weibo struct {
