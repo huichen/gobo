@@ -29,7 +29,7 @@ var (
 
 func main() {
 	// 解析命令行参数
-        flag.Parse()
+	flag.Parse()
 
 	// 调用API
 	var posts gobo.Statuses
