@@ -1,7 +1,7 @@
 gobo
 ====
 
-微博golang SDK
+新浪微博golang SDK
 
 # 安装
 
@@ -11,24 +11,30 @@ go get github.com/huichen/gobo
 
 # 使用
 
-抓取<a href="http://weibo.com/rmrb">@人民日报</a>的最近10条微博（请将代码中的 *redirect_url*, *client_id*, *client_secret* 和 *access_token* 正确地替换掉）:
+抓取<a href="http://weibo.com/rmrb">@人民日报</a>的最近10条微博:
 
 ```go
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/huichen/gobo"
 )
 
+var (
+	weibo = gobo.Weibo{}
+	access_token  = flag.String("access_token", "", "用户的access token")
+)
+
 func main() {
-	// 初始化
-	var wb gobo.Weibo
-	wb.Init(<redirect_uri>, <client_id>, <client_secret>)
-	
+	// 解析命令行参数
+        flag.Parse()
+
 	// 调用API
 	var posts gobo.Statuses
 	params := gobo.Params{"screen_name": "人民日报", "count": "10"}
-	err := wb.Call("statuses/user_timeline", "get", <access_token>, params, &posts)
+	err := weibo.Call("statuses/user_timeline", "get", *access_token, params, &posts)
 	
 	// 处理返回结果
 	if err != nil {
@@ -40,5 +46,8 @@ func main() {
 	}
 }
 ```
+
+access_token可以通过<a href="http://open.weibo.com/tools/console">API测试工具</a>或者gobo.Authenticator得到，用命令行参数-access_token传入即可。
+
 
 更多例子见 <a href="https://github.com/huichen/gobo/blob/master/example/client.go">example/client.go</a>

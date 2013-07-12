@@ -1,4 +1,3 @@
-// Gobo包中常见的结构体
 package gobo
 
 import (
@@ -11,7 +10,7 @@ import (
 // http://open.weibo.com/wiki/常见返回对象数据结构
 //
 // JSON字段名和golang结构体字段名有这样的一一对应关系
-// 
+//
 //	JSON字段:			golang结构体字段:
 //	name_of_a_field			Name_Of_A_Field
 
