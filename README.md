@@ -51,4 +51,4 @@ access_token可以通过<a href="http://open.weibo.com/tools/console">API测试�
 
 gobo.Weibo定义的函数见<a href="https://github.com/huichen/gobo/blob/master/weibo.go">weibo.go</a>中的注释，API返回结构体类型见<a href="https://github.com/huichen/gobo/blob/master/structs.go">structs.go</a>。
 
-更多例子见 <a href="https://github.com/huichen/gobo/blob/master/example/client.go">example/client.go</a>。
+更多例子见 <a href="https://github.com/huichen/gobo/blob/master/examples/weibo.go">examples/weibo.go</a>。
