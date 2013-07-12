@@ -24,7 +24,7 @@ type Authenticator struct {
 func (auth *Authenticator) Init(redirectUri string, clientId string, clientSecret string) error {
 	// 检查结构体是否已经初始化
 	if !auth.initialized {
-		return &ErrorString{"Weibo结构体已经初始化"}
+		return &ErrorString{"Authenticator结构体已经初始化"}
 	}
 
 	auth.redirectUri = redirectUri
@@ -39,7 +39,7 @@ func (auth *Authenticator) Init(redirectUri string, clientId string, clientSecre
 func (auth *Authenticator) GetAuthURI() (string, error) {
 	// 检查结构体是否初始化
 	if !auth.initialized {
-		return "", &ErrorString{"Weibo结构体尚未初始化"}
+		return "", &ErrorString{"Authenticator结构体尚未初始化"}
 	}
 
 	return fmt.Sprintf("%s/oauth2/authorize?redirect_uri=%s&response_type=code&client_id=%s", ApiDomain, auth.redirectUri, auth.clientId), nil
@@ -50,7 +50,7 @@ func (auth *Authenticator) GetAccessToken(code string) (AccessToken, error) {
 	// 检查结构体是否初始化
 	token := AccessToken{}
 	if !auth.initialized {
-		return token, &ErrorString{"Weibo结构体尚未初始化"}
+		return token, &ErrorString{"Authenticator结构体尚未初始化"}
 	}
 
 	// 生成请求URI
