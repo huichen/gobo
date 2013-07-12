@@ -1,7 +1,7 @@
 gobo
 ====
 
-新浪微博golang SDK
+新浪微博 golang SDK
 
 # 安装/更新
 
@@ -47,7 +47,7 @@ func main() {
 }
 ```
 
-access_token可以通过<a href="http://open.weibo.com/tools/console">API测试工具</a>或者gobo.Authenticator得到，用命令行参数-access_token传入即可。
+access_token可以通过<a href="http://open.weibo.com/tools/console">API测试工具</a>或者<a href="https://github.com/huichen/gobo/blob/master/authenticator.go">gobo.Authenticator</a>得到，用命令行参数-access_token传入即可。
 
 
 更多例子见 <a href="https://github.com/huichen/gobo/blob/master/example/client.go">example/client.go</a>
