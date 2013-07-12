@@ -1,7 +1,7 @@
 gobo
 ====
 
-新浪微博 golang SDK，支持所有的<a href="http://open.weibo.com/wiki/微博API">微博API功能</a>
+新浪微博 golang SDK，支持所有<a href="http://open.weibo.com/wiki/微博API">微博API功能</a>
 
 # 安装/更新
 
