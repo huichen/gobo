@@ -24,7 +24,7 @@ import (
 
 var (
 	weibo = gobo.Weibo{}
-	access_token  = flag.String("access_token", "", "用户的access token")
+	access_token = flag.String("access_token", "", "用户的access token")
 )
 
 func main() {
