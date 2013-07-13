@@ -1,3 +1,5 @@
+// 微博认证样例代码
+// 包括得到认证URI，通过验证码得到access token，获得token信息和解除token认证等功能。
 package main
 
 import (
