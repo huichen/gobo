@@ -12,11 +12,6 @@ import (
 	"time"
 )
 
-const (
-	NUM_THREADS    = 10
-	POSTS_PER_PAGE = 100
-)
-
 var (
 	access_token = flag.String("access_token", "", "用户的access token")
 	image        = flag.String("image", "", "上传图片的位置")
@@ -62,27 +57,6 @@ func getUserStatus() {
 	}
 }
 
-func getUserStatuses() {
-	fmt.Println("==== 测试并行调用 statuses/user_timeline ====")
-	input := make(chan int, NUM_THREADS)
-	output := make(chan int, NUM_THREADS)
-	for i := 1; i <= NUM_THREADS; i++ {
-		go func(page int) {
-			var posts gobo.Statuses
-			params := gobo.Params{"screen_name": "人民日报", "count": strconv.Itoa(POSTS_PER_PAGE), "page": strconv.Itoa(page)}
-			weibo.Call("statuses/user_timeline", "get", *access_token, params, &posts)
-			for _, p := range posts.Statuses {
-				fmt.Println(page, ":", p.Text)
-			}
-			output <- 1
-		}(i)
-		input <- i
-	}
-	for i := 0; i < NUM_THREADS; i++ {
-		<-output
-	}
-}
-
 func updateStatus() {
 	fmt.Println("==== 测试 statuses/update ====")
 	var post gobo.Status
@@ -116,7 +90,6 @@ func main() {
 	showUser()
 	getFriendsStatuses()
 	getUserStatus()
-	getUserStatuses()
 	//updateStatus()
 	//uploadStatus()
 }
