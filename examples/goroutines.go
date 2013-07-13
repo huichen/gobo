@@ -92,7 +92,7 @@ func getUserStatusesWithGoroutines() {
 		}
 	}
 
-	// 将所有的微博按照id顺序排序打印
+	// 将所有的微博按照id顺序排序
 	sort.Sort(StatusSlice(statuses))
 
 	// 删除掉重复的微博
