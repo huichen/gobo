@@ -83,9 +83,7 @@ func getUserStatusesWithGoroutines() {
 		case numStatuses := <-done:
 			numCompletedThreads++
 			numTotalStatuses = numTotalStatuses + numStatuses
-		default:
-			// 让子线程飞一会儿
-			time.Sleep(100 * time.Microsecond)
+		case <-time.After(time.Second): // 让子线程飞一会儿
 		}
 
 		// 仅当所有线程完成并且从output通道收集齐全部微博时退出循环
