@@ -48,7 +48,7 @@ func getUserStatusesWithGoroutines() {
 
 	// 启动线程
 	for i := 0; i < NUM_THREADS; i++ {
-		// 此线程负责分页抓取微博
+		// 开辟NUM_THREADS个新线程负责分页抓取微博
 		go func(page int, outputChannel chan *gobo.Status) {
 			var posts gobo.Statuses
 			params := gobo.Params{"screen_name": "人民日报", "count": strconv.Itoa(STATUSES_PER_PAGE), "page": strconv.Itoa(page)}
