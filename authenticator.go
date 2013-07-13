@@ -6,6 +6,7 @@ package gobo
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -23,7 +24,7 @@ type Authenticator struct {
 // 在调用其它函数之前必须首先初始化。
 func (auth *Authenticator) Init(redirectUri string, clientId string, clientSecret string) error {
 	// 检查结构体是否已经初始化
-	if !auth.initialized {
+	if auth.initialized {
 		return &ErrorString{"Authenticator结构体已经初始化"}
 	}
 
@@ -36,7 +37,7 @@ func (auth *Authenticator) Init(redirectUri string, clientId string, clientSecre
 }
 
 // 得到认证URI
-func (auth *Authenticator) GetAuthURI() (string, error) {
+func (auth *Authenticator) Authorize() (string, error) {
 	// 检查结构体是否初始化
 	if !auth.initialized {
 		return "", &ErrorString{"Authenticator结构体尚未初始化"}
@@ -46,7 +47,7 @@ func (auth *Authenticator) GetAuthURI() (string, error) {
 }
 
 // 给定认证code得到access token
-func (auth *Authenticator) GetAccessToken(code string) (AccessToken, error) {
+func (auth *Authenticator) AccessToken(code string) (AccessToken, error) {
 	// 检查结构体是否初始化
 	token := AccessToken{}
 	if !auth.initialized {
@@ -54,7 +55,6 @@ func (auth *Authenticator) GetAccessToken(code string) (AccessToken, error) {
 	}
 
 	// 生成请求URI
-	requestUri := fmt.Sprintf("%s/oauth2/access_token", ApiDomain)
 	queries := url.Values{}
 	queries.Add("client_id", auth.clientId)
 	queries.Add("client_secret", auth.clientSecret)
@@ -62,14 +62,73 @@ func (auth *Authenticator) GetAccessToken(code string) (AccessToken, error) {
 	queries.Add("grant_type", "authorization_code")
 	queries.Add("code", code)
 
+	// 发送请求
+	err := auth.sendPostHttpRequest("oauth2/access_token", queries, &token)
+	return token, err
+}
+
+// 得到access token的信息
+func (auth *Authenticator) GetTokenInfo(token string) (AccessTokenInfo, error) {
+	// 检查结构体是否初始化
+	info := AccessTokenInfo{}
+	if !auth.initialized {
+		return info, &ErrorString{"Authenticator结构体尚未初始化"}
+	}
+
+	// 生成请求URI
+	queries := url.Values{}
+	queries.Add("access_token", token)
+
+	// 发送请求
+	err := auth.sendPostHttpRequest("oauth2/get_token_info", queries, &info)
+	return info, err
+}
+
+// 解除access token的认证
+func (auth *Authenticator) Revokeoauth2(token string) error {
+	// 检查结构体是否初始化
+	if !auth.initialized {
+		return &ErrorString{"Authenticator结构体尚未初始化"}
+	}
+
+	// 生成请求URI
+	queries := url.Values{}
+	queries.Add("access_token", token)
+
+	// 发送请求
+	type Result struct {
+		Result string
+	}
+	var result Result
+	err := auth.sendPostHttpRequest("oauth2/revokeoauth2", queries, &result)
+	return err
+}
+
+func (auth *Authenticator) sendPostHttpRequest(apiName string, queries url.Values, response interface{}) error {
+	// 生成请求URI
+	requestUri := fmt.Sprintf("%s/%s", ApiDomain, apiName)
+
 	// 发送POST Form请求
 	resp, err := auth.httpClient.PostForm(requestUri, queries)
 	if err != nil {
-		return token, err
+		return err
 	}
 	defer resp.Body.Close()
 
 	// 解析返回内容
-	json.NewDecoder(resp.Body).Decode(&token)
-	return token, nil
+	bytes, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode == 200 {
+		err := json.Unmarshal(bytes, &response)
+		if err != nil {
+			return err
+		}
+	} else {
+		var weiboErr WeiboError
+		err := json.Unmarshal(bytes, &weiboErr)
+		if err != nil {
+			return err
+		}
+		return weiboErr
+	}
+	return nil
 }

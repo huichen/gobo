@@ -47,8 +47,8 @@ func main() {
 }
 ```
 
-access_token可以通过<a href="http://open.weibo.com/tools/console">API测试工具</a>或者<a href="https://github.com/huichen/gobo/blob/master/authenticator.go">gobo.Authenticator</a>得到，用命令行参数-access_token传入即可。
+用命令行参数-access_token传入access_token。 access_token可以通过<a href="http://open.weibo.com/tools/console">API测试工具</a>或者<a href="https://github.com/huichen/gobo/blob/master/examples/auth.go">gobo.Authenticator</a>得到。
 
 gobo.Weibo定义的函数见<a href="https://github.com/huichen/gobo/blob/master/weibo.go">weibo.go</a>中的注释，API返回结构体类型见<a href="https://github.com/huichen/gobo/blob/master/structs.go">structs.go</a>。
 
-更多例子见 <a href="https://github.com/huichen/gobo/blob/master/examples/weibo.go">examples/weibo.go</a>。
+更多API调用的例子见 <a href="https://github.com/huichen/gobo/blob/master/examples/weibo.go">examples/weibo.go</a>。

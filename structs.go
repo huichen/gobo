@@ -151,6 +151,14 @@ type AccessToken struct {
 	Uid          string
 }
 
+type AccessTokenInfo struct {
+	Uid        int64
+	Appkey     string
+	Scope      string
+	Created_At int
+	Expire_In  int
+}
+
 type Statuses struct {
 	Statuses []*Status
 }
