@@ -7,10 +7,11 @@ import (
 	"github.com/huichen/gobo"
 	"sort"
 	"strconv"
+	"time"
 )
 
 const (
-	NUM_THREADS       = 30
+	NUM_THREADS       = 20
 	STATUSES_PER_PAGE = 100
 )
 
@@ -30,11 +31,14 @@ func (ss StatusSlice) Swap(i, j int) {
 	ss[i], ss[j] = ss[j], ss[i]
 }
 func (ss StatusSlice) Less(i, j int) bool {
-	return ss[i].Id < ss[j].Id
+	return ss[i].Id > ss[j].Id
 }
 
 func getUserStatusesWithGoroutines() {
 	fmt.Println("==== 测试并行调用 statuses/user_timeline ====")
+
+	// 记录初始时间
+	t0 := time.Now()
 
 	// 为每个线程建立通道，从子线程中抓取的微博依次压入相应通道中
 	output := [NUM_THREADS]chan *gobo.Status{}
@@ -69,21 +73,37 @@ func getUserStatusesWithGoroutines() {
 	numCompletedThreads := 0
 	statuses := make([]*gobo.Status, 0, NUM_THREADS*STATUSES_PER_PAGE) // 长度为零但预留足够容量
 	completedChannels := map[int]bool{}
-	for numCompletedThreads < NUM_THREADS { // 仅当所有通道关闭时推出循环
+	for numCompletedThreads < NUM_THREADS { // 仅当所有通道关闭时退出循环
 		for i, ch := range output {
-			status, more := <-ch
-			if more {
-				statuses = append(statuses, status)
-			} else if !completedChannels[i] {
-				completedChannels[i] = true
-				numCompletedThreads++
+			if !completedChannels[i] {
+				status, more := <-ch
+				if more {
+					statuses = append(statuses, status)
+				} else if !completedChannels[i] {
+					completedChannels[i] = true
+					numCompletedThreads++
+				}
 			}
 		}
 	}
 
 	// 将所有的微博按照id顺序排序打印
-	fmt.Printf("\n抓取的总微博数 %d\n", len(statuses))
 	sort.Sort(StatusSlice(statuses))
+
+	// 删除掉重复的微博
+	newStatuses := make([]*gobo.Status, 0, len(statuses))
+	for i := 0; i < len(statuses); i++ {
+		if i > 0 && statuses[i].Id == statuses[i-1].Id {
+			continue
+		}
+		newStatuses = append(newStatuses, statuses[i])
+	}
+	fmt.Printf("\n抓取的总微博数 %d\n", len(newStatuses))
+
+	// 记录终止时间
+	t1 := time.Now()
+	fmt.Printf("并行抓取花费时间 %v\n", t1.Sub(t0))
+
 }
 
 func main() {
