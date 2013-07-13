@@ -1,6 +1,4 @@
-// 定义Authenticator结构体
-//
-// 该结构体实现了微博API认证功能。
+// authenticator.go文件定义Authenticator结构体，该结构体实现了微博API认证功能。
 package gobo
 
 import (

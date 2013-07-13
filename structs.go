@@ -1,3 +1,4 @@
+// structs.go文件定义常见的数据类型，比如微博API的返回类型等。
 package gobo
 
 import (
@@ -133,6 +134,14 @@ type Geo struct {
 }
 
 // 其他的常用结构体
+
+type ErrorString struct {
+	s string
+}
+
+func (e *ErrorString) Error() string {
+	return e.s
+}
 
 type WeiboError struct {
 	Err        string `json:"Error"`

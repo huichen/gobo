@@ -1,6 +1,4 @@
-// 定义Weibo结构体
-//
-// 该结构体定义了对微博API服务器的所有调用功能。
+// weibo.go文件定义Weibo结构体，该结构体定义了所有微博API调用。
 package gobo
 
 import (
