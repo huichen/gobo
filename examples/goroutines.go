@@ -103,7 +103,6 @@ func getUserStatusesWithGoroutines() {
 	// 记录终止时间
 	t1 := time.Now()
 	fmt.Printf("并行抓取花费时间 %v\n", t1.Sub(t0))
-
 }
 
 func main() {
