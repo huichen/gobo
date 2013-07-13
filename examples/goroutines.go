@@ -40,50 +40,57 @@ func getUserStatusesWithGoroutines() {
 	// 记录初始时间
 	t0 := time.Now()
 
-	// 为每个线程建立通道，从子线程中抓取的微博依次压入相应通道中
-	output := [NUM_THREADS]chan *gobo.Status{}
-	for i := 0; i < NUM_THREADS; i++ {
-		output[i] = make(chan *gobo.Status, STATUSES_PER_PAGE)
-	}
+	// output通道中收集所有线程抓取的微博
+	output := make(chan *gobo.Status, STATUSES_PER_PAGE*NUM_THREADS)
 
-	// 启动线程
+	// done通道中收集线程抓取微博的数目，并负责通知主线程是否全部子线程已经完成
+	done := make(chan int, NUM_THREADS)
+
+	// 启动子线程
 	for i := 0; i < NUM_THREADS; i++ {
 		// 开辟NUM_THREADS个新线程负责分页抓取微博
-		go func(page int, outputChannel chan *gobo.Status) {
+		go func(page int) {
 			var posts gobo.Statuses
 			params := gobo.Params{"screen_name": "人民日报", "count": strconv.Itoa(STATUSES_PER_PAGE), "page": strconv.Itoa(page)}
 			err := weibo.Call("statuses/user_timeline", "get", *access_token, params, &posts)
 			if err != nil {
 				fmt.Println(err)
-				close(outputChannel)
+				done <- 0
 				return
 			}
-			fmt.Printf("线程%d抓取的微博数 %d\n", page, len(posts.Statuses))
 			for _, p := range posts.Statuses {
 				select {
-				case outputChannel <- p:
+				case output <- p:
 				default:
 				}
 			}
-			close(outputChannel)
-		}(i+1, output[i])
+			fmt.Printf("线程%d抓取的微博数 %d\n", page, len(posts.Statuses))
+			done <- len(posts.Statuses)
+		}(i + 1)
 	}
 
 	// 循环监听线程通道
 	numCompletedThreads := 0
+	numReceivedStatuses := 0
+	numTotalStatuses := 0
 	statuses := make([]*gobo.Status, 0, NUM_THREADS*STATUSES_PER_PAGE) // 长度为零但预留足够容量
-	completedChannels := map[int]bool{}
-	for numCompletedThreads < NUM_THREADS { // 仅当所有通道关闭时退出循环
-		for i, ch := range output {
-			if !completedChannels[i] {
-				status, more := <-ch
-				if more {
-					statuses = append(statuses, status)
-				} else if !completedChannels[i] {
-					completedChannels[i] = true
-					numCompletedThreads++
-				}
-			}
+	for {
+		// 非阻塞监听output和done通道
+		select {
+		case status := <-output:
+			statuses = append(statuses, status)
+			numReceivedStatuses++
+		case numStatuses := <-done:
+			numCompletedThreads++
+			numTotalStatuses = numTotalStatuses + numStatuses
+		default:
+			// 让子线程飞一会儿
+			time.Sleep(100 * time.Microsecond)
+		}
+
+		// 仅当所有线程完成并且从output通道收集齐全部微博时退出循环
+		if numCompletedThreads == NUM_THREADS && numTotalStatuses == numReceivedStatuses {
+			break
 		}
 	}
 
