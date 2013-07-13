@@ -1,3 +1,4 @@
+// 微博API调用样例程序
 package main
 
 import (
