@@ -33,55 +33,55 @@ func showUser() {
 
 func getFriendsStatuses() {
 	fmt.Println("==== 测试 statuses/friends_timeline ====")
-	var posts gobo.Statuses
+	var statuses gobo.Statuses
 	params := gobo.Params{"count": 10}
-	err := weibo.Call("statuses/friends_timeline", "get", *access_token, params, &posts)
+	err := weibo.Call("statuses/friends_timeline", "get", *access_token, params, &statuses)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		for _, p := range posts.Statuses {
-			fmt.Println(p.Text)
+		for _, status := range statuses.Statuses {
+			fmt.Println(status.Text)
 		}
 	}
 }
 
 func getUserStatus() {
 	fmt.Println("==== 测试 statuses/user_timeline ====")
-	var posts gobo.Statuses
+	var statuses gobo.Statuses
 	params := gobo.Params{"screen_name": "人民日报", "count": 1}
-	err := weibo.Call("statuses/user_timeline", "get", *access_token, params, &posts)
+	err := weibo.Call("statuses/user_timeline", "get", *access_token, params, &statuses)
 	if err != nil {
 		fmt.Println(err)
-	} else if len(posts.Statuses) > 0 {
-		fmt.Printf("%#v\n", posts.Statuses[0])
+	} else if len(statuses.Statuses) > 0 {
+		fmt.Printf("%#v\n", statuses.Statuses[0])
 	}
 }
 
 func updateStatus() {
 	fmt.Println("==== 测试 statuses/update ====")
-	var post gobo.Status
+	var status gobo.Status
 	params := gobo.Params{"status": "测试" + strconv.Itoa(rand.Int())}
-	err := weibo.Call("statuses/update", "post", *access_token, params, &post)
+	err := weibo.Call("statuses/update", "status", *access_token, params, &status)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("%#v\n", post)
+		fmt.Printf("%#v\n", status)
 	}
 }
 
 func uploadStatus() {
 	fmt.Println("==== 测试 statuses/upload ====")
-	var post gobo.Status
+	var status gobo.Status
 	params := gobo.Params{"status": "测试" + strconv.Itoa(rand.Int())}
 	img, err := os.Open(*image)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = weibo.Upload(*access_token, params, img, filepath.Ext(*image), &post)
+	err = weibo.Upload(*access_token, params, img, filepath.Ext(*image), &status)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("%#v\n", post)
+		fmt.Printf("%#v\n", status)
 	}
 }
 
