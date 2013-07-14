@@ -135,11 +135,11 @@ type Geo struct {
 // 其他的常用结构体
 
 type ErrorString struct {
-	s string
+	S string
 }
 
 func (e *ErrorString) Error() string {
-	return e.s
+	return "Gobo错误：" + e.S
 }
 
 type WeiboError struct {
