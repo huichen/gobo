@@ -1,4 +1,3 @@
-// weibo.go文件定义Weibo结构体，该结构体定义了所有微博API调用。
 package gobo
 
 import (
@@ -12,12 +11,12 @@ import (
 	"net/url"
 )
 
-// Params是一个表，用来表达所有API的JSON输入参数。注意：
-// 	1. value必须是string类型的，其它类型请转化为string
-// 	2. Params不应当包含access_token，因为access_token已经是Call和Upload函数的参数
-// 	3. 在Upload函数中，Params参数不应当包含pic参数，上传的图片内容和类型应当通过reader和imageFormat指定
-type Params map[string]string
+// Params是一个表，用来表达微博API的JSON输入参数。注意：
+// 	1. Params不应当包含访问令牌(access_token)，因为它已经是Call和Upload函数的参数
+// 	2. 在Upload函数中，Params参数不应当包含pic参数，上传的图片内容和类型应当通过reader和imageFormat指定
+type Params map[string]interface{}
 
+// Weibo结构体定义了所有微博API调用功能
 type Weibo struct {
 	httpClient http.Client
 }
@@ -29,7 +28,7 @@ type Weibo struct {
 // 输入参数
 // 	method		API方法名，比如 "/statuses/user_timeline" 又如 "comments/show"
 //	httpMethod	HTTP请求方式，只能是"get"或者"post"之一，否则出错
-//	token		用户授权的access_token
+//	token		用户授权的访问令牌
 //	params		JSON输入参数，见Params结构体的注释
 //	response	API服务器的JSON输出将被还原成该结构体
 //
@@ -47,7 +46,7 @@ func (weibo *Weibo) Call(method string, httpMethod string, token string, params 
 // 调用Weibo API之/statuses/upload （发图片微博）
 //
 // 输入参数
-//	token		用户授权的access_token
+//	token		用户授权的访问令牌
 //	params		JSON输入参数，见Params结构体的注释
 //	reader		包含图片的二进制流
 //	imageFormat	图片的格式，比如 "jpg" 又如 "png"
@@ -65,8 +64,9 @@ func (weibo *Weibo) sendGetHttpRequest(uri string, token string, params Params, 
 	var uriBuffer bytes.Buffer
 	uriBuffer.WriteString(fmt.Sprintf("%s?access_token=%s", uri, token))
 	for k, v := range params {
-		if k != "" && v != "" {
-			uriBuffer.WriteString(fmt.Sprintf("&%s=%s", k, v))
+		value := fmt.Sprint(v)
+		if k != "" && value != "" {
+			uriBuffer.WriteString(fmt.Sprintf("&%s=%s", k, value))
 		}
 	}
 	requestUri := uriBuffer.String()
@@ -112,9 +112,10 @@ func (weibo *Weibo) sendPostHttpRequest(uri string, token string, params Params,
 		pb := url.Values{}
 		pb.Add("access_token", token)
 
-		for key, value := range params {
-			if key != "" && value != "" {
-				pb.Add(key, value)
+		for k, v := range params {
+			value := fmt.Sprint(v)
+			if k != "" && value != "" {
+				pb.Add(k, value)
 			}
 		}
 		bodyBuffer = *bytes.NewBufferString(pb.Encode())
@@ -123,9 +124,10 @@ func (weibo *Weibo) sendPostHttpRequest(uri string, token string, params Params,
 		writer = multipart.NewWriter(&bodyBuffer)
 		imagePartWriter, _ := writer.CreateFormFile("pic", "image."+imageFormat)
 		io.Copy(imagePartWriter, reader)
-		for key, value := range params {
-			if key != "" && value != "" {
-				writer.WriteField(key, value)
+		for k, v := range params {
+			value := fmt.Sprint(v)
+			if k != "" && value != "" {
+				writer.WriteField(k, value)
 			}
 		}
 		writer.Close()

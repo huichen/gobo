@@ -1,4 +1,3 @@
-// structs.go文件定义常见的数据类型，比如微博API的返回类型等。
 package gobo
 
 import (
@@ -150,7 +149,7 @@ type WeiboError struct {
 }
 
 func (e WeiboError) Error() string {
-	return fmt.Sprintf("微博API 错误 %d [%s] %s", e.Error_Code, e.Request, e.Err)
+	return fmt.Sprintf("微博API访问错误 %d [%s] %s", e.Error_Code, e.Request, e.Err)
 }
 
 type AccessToken struct {

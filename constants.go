@@ -1,4 +1,3 @@
-// constants.go文件定义常数。
 package gobo
 
 // 微博API相关的常数

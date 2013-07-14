@@ -1,4 +1,4 @@
-// 样例程序：利用goroutines并行抓取微博
+// 例子程序：利用goroutines并行抓取微博
 package main
 
 import (
@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/huichen/gobo"
 	"sort"
-	"strconv"
 	"time"
 )
 
@@ -16,11 +15,11 @@ const (
 )
 
 var (
-	access_token = flag.String("access_token", "", "用户的access token")
+	access_token = flag.String("access_token", "", "用户的访问令牌")
 	weibo        = gobo.Weibo{}
 )
 
-// 为了方便将微博排序定义下列结构体和函数
+// 为了方便将微博排序定义下列结构体和成员函数
 
 type StatusSlice []*gobo.Status
 
@@ -51,7 +50,7 @@ func getUserStatusesWithGoroutines() {
 		// 开辟NUM_THREADS个新线程负责分页抓取微博
 		go func(page int) {
 			var posts gobo.Statuses
-			params := gobo.Params{"screen_name": "人民日报", "count": strconv.Itoa(STATUSES_PER_PAGE), "page": strconv.Itoa(page)}
+			params := gobo.Params{"screen_name": "人民日报", "count": STATUSES_PER_PAGE, "page": page}
 			err := weibo.Call("statuses/user_timeline", "get", *access_token, params, &posts)
 			if err != nil {
 				fmt.Println(err)

@@ -1,4 +1,4 @@
-// 微博API调用样例程序
+// 例子程序：调用微博API
 package main
 
 import (
@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	access_token = flag.String("access_token", "", "用户的access token")
+	access_token = flag.String("access_token", "", "用户的访问令牌")
 	image        = flag.String("image", "", "上传图片的位置")
 	random       = rand.New(rand.NewSource(time.Now().UnixNano()))
 	weibo        = gobo.Weibo{}
@@ -34,7 +34,7 @@ func showUser() {
 func getFriendsStatuses() {
 	fmt.Println("==== 测试 statuses/friends_timeline ====")
 	var posts gobo.Statuses
-	params := gobo.Params{"count": "10"}
+	params := gobo.Params{"count": 10}
 	err := weibo.Call("statuses/friends_timeline", "get", *access_token, params, &posts)
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +48,7 @@ func getFriendsStatuses() {
 func getUserStatus() {
 	fmt.Println("==== 测试 statuses/user_timeline ====")
 	var posts gobo.Statuses
-	params := gobo.Params{"screen_name": "人民日报", "count": "1"}
+	params := gobo.Params{"screen_name": "人民日报", "count": 1}
 	err := weibo.Call("statuses/user_timeline", "get", *access_token, params, &posts)
 	if err != nil {
 		fmt.Println(err)

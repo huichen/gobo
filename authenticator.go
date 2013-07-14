@@ -1,4 +1,3 @@
-// authenticator.go文件定义Authenticator结构体，该结构体实现了微博API认证功能。
 package gobo
 
 import (
@@ -9,6 +8,7 @@ import (
 	"net/url"
 )
 
+// Authenticator结构体实现了微博应用授权功能
 type Authenticator struct {
 	redirectUri  string
 	clientId     string
@@ -34,7 +34,7 @@ func (auth *Authenticator) Init(redirectUri string, clientId string, clientSecre
 	return nil
 }
 
-// 得到认证URI
+// 得到授权URI
 func (auth *Authenticator) Authorize() (string, error) {
 	// 检查结构体是否初始化
 	if !auth.initialized {
@@ -44,7 +44,7 @@ func (auth *Authenticator) Authorize() (string, error) {
 	return fmt.Sprintf("%s/oauth2/authorize?redirect_uri=%s&response_type=code&client_id=%s", ApiDomain, auth.redirectUri, auth.clientId), nil
 }
 
-// 给定认证code得到access token
+// 从授权码得到访问令牌
 func (auth *Authenticator) AccessToken(code string) (AccessToken, error) {
 	// 检查结构体是否初始化
 	token := AccessToken{}
@@ -65,7 +65,7 @@ func (auth *Authenticator) AccessToken(code string) (AccessToken, error) {
 	return token, err
 }
 
-// 得到access token的信息
+// 得到访问令牌对应的信息
 func (auth *Authenticator) GetTokenInfo(token string) (AccessTokenInfo, error) {
 	// 检查结构体是否初始化
 	info := AccessTokenInfo{}
@@ -82,7 +82,7 @@ func (auth *Authenticator) GetTokenInfo(token string) (AccessTokenInfo, error) {
 	return info, err
 }
 
-// 解除access token的认证
+// 解除访问令牌的授权
 func (auth *Authenticator) Revokeoauth2(token string) error {
 	// 检查结构体是否初始化
 	if !auth.initialized {
