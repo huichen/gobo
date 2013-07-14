@@ -82,9 +82,9 @@ func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId
 		case status := <-output:
 			statuses = append(statuses, status)
 			numReceivedStatuses++
-		case numStatuses := <-done:
+		case numThreadStatuses := <-done:
 			numCompletedThreads++
-			numTotalStatuses = numTotalStatuses + numStatuses
+			numTotalStatuses = numTotalStatuses + numThreadStatuses
 		case <-time.After(time.Second): // 让子线程飞一会儿
 		}
 
@@ -99,11 +99,20 @@ func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId
 
 	// 删除掉重复的微博
 	sortedStatuses := make([]*gobo.Status, 0, len(statuses))
+	numStatusesToReturn := 0
 	for i := 0; i < len(statuses); i++ {
+		// 跳过重复微博
 		if i > 0 && statuses[i].Id == statuses[i-1].Id {
 			continue
 		}
+
 		sortedStatuses = append(sortedStatuses, statuses[i])
+		numStatusesToReturn++
+
+		// 最多返回numStatuses条微博
+		if numStatusesToReturn == numStatuses {
+			break
+		}
 	}
 	return sortedStatuses, nil
 }

@@ -28,7 +28,7 @@ func main() {
 	statuses, err := contrib.GetStatuses(&weibo, *access_token,
 		"人民日报", // 微博用户名
 		0,      // 微博用户ID，仅当用户名为空字符串时使用
-		2000)   // 抓取微博数
+		211)    // 抓取微博数
 	if err != nil {
 		fmt.Println(err)
 		return
