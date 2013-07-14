@@ -39,10 +39,10 @@ func main() {
 	// 处理返回结果
 	if err != nil {
 		fmt.Println(err)
-	} else if len(statuses.Statuses) > 0 {
-		for _, status := range posts.Statuses {
-			fmt.Println(status.Text)
-		}
+		return
+	}
+	for _, status := range statuses.Statuses {
+		fmt.Println(status.Text)
 	}
 }
 ```
