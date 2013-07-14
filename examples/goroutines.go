@@ -14,9 +14,6 @@ var (
 	weibo        = gobo.Weibo{}
 )
 
-func getUserStatusesWithGoroutines() {
-}
-
 func main() {
 	flag.Parse()
 	fmt.Println("==== 测试并行调用 statuses/user_timeline ====")
