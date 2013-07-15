@@ -57,7 +57,6 @@ func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId
 			}
 			err := weibo.Call("statuses/user_timeline", "get", access_token, params, &posts)
 			if err != nil {
-				fmt.Println(err)
 				done <- 0
 				return
 			}
