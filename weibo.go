@@ -11,19 +11,19 @@ import (
 	"net/url"
 )
 
-// Params是一个表，用来表达微博API的JSON输入参数。注意：
+// Params类型用来表达微博API的JSON输入参数。注意：
 // 	1. Params不应当包含访问令牌(access_token)，因为它已经是Call和Upload函数的参数
 // 	2. 在Upload函数中，Params参数不应当包含pic参数，上传的图片内容和类型应当通过reader和imageFormat指定
 type Params map[string]interface{}
 
-// Weibo结构体定义了所有微博API调用功能
+// Weibo结构体定义了微博API调用功能
 type Weibo struct {
 	httpClient http.Client
 }
 
 // 调用微博API
 //
-// 该函数调用除了statuses/upload（见Upload函数）外的所有微博API。
+// 该函数可用来调用除了statuses/upload（见Upload函数）和微博授权（见Authenticator结构体）外的所有微博API。
 //
 // 输入参数
 // 	method		API方法名，比如 "/statuses/user_timeline" 又如 "comments/show"
@@ -43,7 +43,7 @@ func (weibo *Weibo) Call(method string, httpMethod string, token string, params 
 	return &ErrorString{"HTTP方法只能是\"get\"或者\"post\""}
 }
 
-// 调用Weibo API之/statuses/upload （发图片微博）
+// 调用/statuses/upload发带图片微博
 //
 // 输入参数
 //	token		用户授权的访问令牌
