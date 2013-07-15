@@ -1,7 +1,6 @@
 package contrib
 
 import (
-	"fmt"
 	"github.com/huichen/gobo"
 	"math"
 	"sort"
