@@ -20,9 +20,10 @@ const (
 // 	userName	微博用户名
 //	userId		微博用户ID，注意仅当userName为空字符串时使用此值
 //	numStatuses	需要抓取的总微博数，注意由于新浪的限制，最多只能抓取最近2000条微博，当此参数大于2000时取2000
+//      timeout		超时退出，单位为毫秒，当值为0时不设超时
 //
 // 返回按照ID逆序排序的微博
-func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId int64, numStatuses int) ([]*gobo.Status, error) {
+func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId int64, numStatuses int, timeout int) ([]*gobo.Status, error) {
 	// 检查输入参数的有效性
 	if userName == "" && userId == 0 {
 		return nil, &gobo.ErrorString{"userName和userId不可以都是无效值"}
@@ -74,6 +75,8 @@ func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId
 	numReceivedStatuses := 0
 	numTotalStatuses := 0
 	statuses := make([]*gobo.Status, 0, numThreads*STATUSES_PER_PAGE) // 长度为零但预留足够容量
+	isTimeout := false
+	t0 := time.Now()
 	for {
 		// 非阻塞监听output和done通道
 		select {
@@ -86,10 +89,23 @@ func GetStatuses(weibo *gobo.Weibo, access_token string, userName string, userId
 		case <-time.After(time.Second): // 让子线程飞一会儿
 		}
 
-		// 仅当所有线程完成并且从output通道收集齐全部微博时退出循环
+		// 超时退出
+		if timeout > 0 {
+			t1 := time.Now()
+			if t1.Sub(t0).Nanoseconds() > int64(timeout)*1000000 {
+				isTimeout = true
+				break
+			}
+		}
+
+		// 当所有线程完成并且从output通道收集齐全部微博时退出循环
 		if numCompletedThreads == numThreads && numTotalStatuses == numReceivedStatuses {
 			break
 		}
+	}
+
+	if isTimeout {
+		return nil, &gobo.ErrorString{"抓取超时"}
 	}
 
 	// 将所有的微博按照id顺序排序

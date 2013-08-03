@@ -12,6 +12,7 @@ import (
 var (
 	access_token = flag.String("access_token", "", "用户的访问令牌")
 	weibo        = gobo.Weibo{}
+	timeout      = flag.Int("timeout", 0, "超时，单位毫秒")
 )
 
 func main() {
@@ -23,9 +24,10 @@ func main() {
 
 	// 抓微博
 	statuses, err := contrib.GetStatuses(&weibo, *access_token,
-		"人民日报", // 微博用户名
-		0,      // 微博用户ID，仅当用户名为空字符串时使用
-		211)    // 抓取微博数
+		"人民日报",   // 微博用户名
+		0,        // 微博用户ID，仅当用户名为空字符串时使用
+		211,      // 抓取微博数
+		*timeout) // 不设超时
 	if err != nil {
 		fmt.Println(err)
 		return
